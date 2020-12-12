@@ -2,12 +2,11 @@
 # Code taken from https://github.com/iwantooxxoox/Keras-OpenFace (with minor modifications)
 # -----------------------------------------------------------------------------------------
 
-from keras.layers import Conv2D, ZeroPadding2D, Activation, Input, concatenate
-from keras.layers.core import Lambda, Flatten, Dense
-from keras.layers.normalization import BatchNormalization
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D
-from keras.models import Model
-from keras import backend as K
+from tensorflow.keras import Input
+from tensorflow.keras.layers import Conv2D, ZeroPadding2D, Activation, Input, concatenate
+from tensorflow.keras.layers import Lambda, Flatten, Dense, BatchNormalization, MaxPool2D, AveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras import backend as K
 
 import utils
 from utils import LRN2D
@@ -20,7 +19,7 @@ def create_model():
     x = BatchNormalization(axis=3, epsilon=0.00001, name='bn1')(x)
     x = Activation('relu')(x)
     x = ZeroPadding2D(padding=(1, 1))(x)
-    x = MaxPooling2D(pool_size=3, strides=2)(x)
+    x = MaxPool2D(pool_size=3, strides=2)(x)
     x = Lambda(LRN2D, name='lrn_1')(x)
     x = Conv2D(64, (1, 1), name='conv2')(x)
     x = BatchNormalization(axis=3, epsilon=0.00001, name='bn2')(x)
@@ -31,7 +30,7 @@ def create_model():
     x = Activation('relu')(x)
     x = Lambda(LRN2D, name='lrn_2')(x)
     x = ZeroPadding2D(padding=(1, 1))(x)
-    x = MaxPooling2D(pool_size=3, strides=2)(x)
+    x = MaxPool2D(pool_size=3, strides=2)(x)
 
     # Inception3a
     inception_3a_3x3 = Conv2D(96, (1, 1), name='inception_3a_3x3_conv1')(x)
@@ -50,7 +49,7 @@ def create_model():
     inception_3a_5x5 = BatchNormalization(axis=3, epsilon=0.00001, name='inception_3a_5x5_bn2')(inception_3a_5x5)
     inception_3a_5x5 = Activation('relu')(inception_3a_5x5)
 
-    inception_3a_pool = MaxPooling2D(pool_size=3, strides=2)(x)
+    inception_3a_pool = MaxPool2D(pool_size=3, strides=2)(x)
     inception_3a_pool = Conv2D(32, (1, 1), name='inception_3a_pool_conv')(inception_3a_pool)
     inception_3a_pool = BatchNormalization(axis=3, epsilon=0.00001, name='inception_3a_pool_bn')(inception_3a_pool)
     inception_3a_pool = Activation('relu')(inception_3a_pool)
@@ -110,7 +109,7 @@ def create_model():
                                        cv2_strides=(2, 2),
                                        padding=(2, 2))
 
-    inception_3c_pool = MaxPooling2D(pool_size=3, strides=2)(inception_3b)
+    inception_3c_pool = MaxPool2D(pool_size=3, strides=2)(inception_3b)
     inception_3c_pool = ZeroPadding2D(padding=((0, 1), (0, 1)))(inception_3c_pool)
 
     inception_3c = concatenate([inception_3c_3x3, inception_3c_5x5, inception_3c_pool], axis=3)
@@ -162,7 +161,7 @@ def create_model():
                                        cv2_filter=(5, 5),
                                        cv2_strides=(2, 2),
                                        padding=(2, 2))
-    inception_4e_pool = MaxPooling2D(pool_size=3, strides=2)(inception_4a)
+    inception_4e_pool = MaxPool2D(pool_size=3, strides=2)(inception_4a)
     inception_4e_pool = ZeroPadding2D(padding=((0, 1), (0, 1)))(inception_4e_pool)
 
     inception_4e = concatenate([inception_4e_3x3, inception_4e_5x5, inception_4e_pool], axis=3)
@@ -199,7 +198,7 @@ def create_model():
                                        cv2_filter=(3, 3),
                                        cv2_strides=(1, 1),
                                        padding=(1, 1))
-    inception_5b_pool = MaxPooling2D(pool_size=3, strides=2)(inception_5a)
+    inception_5b_pool = MaxPool2D(pool_size=3, strides=2)(inception_5a)
     inception_5b_pool = utils.conv2d_bn(inception_5b_pool,
                                         layer='inception_5b_pool',
                                         cv1_out=96,
